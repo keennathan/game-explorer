@@ -28,7 +28,7 @@ Game Explorer is a web application that helps users discover games tailored to t
 ## **Tech Stack**
 - **Frontend**: React, React Router
 - **State Management**: React Context API
-- **Styling**: TailwindCSS
+- **Styling**: Bootstrap
 - **API**: IGDB API
 - **Deployment**: Netlify
 
