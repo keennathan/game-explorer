@@ -89,7 +89,7 @@ The app is deployed on Netlify:
 To deploy yourself:
 1. Push your code to GitHub.
 2. Connect your GitHub repository to Netlify.
-3. Add environment variables for your_client_id and your_access_token in Netlify settings.
+3. Add environment variables for `VITE_CLIENT_ID` and `VITE_CLIENT_SECRET` in Netlify settings.
 4. Deploy the site.  
 
 ---
