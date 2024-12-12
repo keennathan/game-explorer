@@ -14,6 +14,11 @@ const gameReducer = (state, action) => {
                 ...state,
                 games: action.payload
             };
+        case "ADD_GAMES":
+            return {
+                ...state,
+                games: [...state.games, ...action.payload]
+            };
         case "ADD_TO_WATCHLIST":
             return {
                 ...state,

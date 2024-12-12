@@ -20,7 +20,7 @@ const Home = () => {
             await fetchGames();
         };
 
-        const fetchGames = async () => {
+        const fetchGames = async (page = 0) => {
             try {
                 console.log('Fetching games...');
                 const response = await axios.post(
@@ -30,6 +30,7 @@ const Home = () => {
                     where platforms = (6, 48, 49, 167, 169) & total_rating_count != null;
                     sort total_rating_count desc;
                     limit 10;
+                    offset ${page * 10};
                     `,
                     {
                         headers: {
@@ -40,7 +41,7 @@ const Home = () => {
                     }
                 );
                 console.log('Games fetched:', response.data);
-                dispatch({ type: 'SET_GAMES', payload: response.data });
+                dispatch({ type: 'ADD_GAMES', payload: response.data });
             } catch (error) {
                 console.error('Error fetching games:', error);
                 console.error('Error details:', error.response ? error.response.data : error.message);
