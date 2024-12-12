@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 import { GameContext } from "../context/GameContext";
 
 const GameCard = ({ game }) => {
@@ -19,7 +20,7 @@ const GameCard = ({ game }) => {
             <img
                 src={game.cover?.url.replace('t_thumb', 't_cover_big')}
                 alt={game.name}
-                className="card-img-top"
+                className="card-img-top mt-3"
                 style={{ height: '250px', objectFit: 'scale-down' }}
             />
             <div className="card-body d-flex flex-column">
@@ -36,6 +37,9 @@ const GameCard = ({ game }) => {
                         Add to Watchlist
                     </button>
                 )}
+                <Link to={`/game/${game.id}`} className="btn btn-secondary mt-2">
+                    View Details
+                </Link>
             </div>
         </div>
     );
