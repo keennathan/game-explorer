@@ -6,6 +6,7 @@ import { GameContext } from "../context/GameContext";
 const Home = () => {
     const { state, dispatch } = useContext(GameContext);
     const [accessToken, setAccessToken] = useState('');
+    const [tokenExpiry, setTokenExpiry] = useState(0);
 
     const getTwitchAccessToken = async () => {
         try {
@@ -21,6 +22,7 @@ const Home = () => {
             console.log(`Expires In: ${expires_in} seconds`);
             console.log(`Token Type: ${token_type}`);
             setAccessToken(access_token);
+            setTokenExpiry(Date.now() + expires_in * 1000); // Set token expiry time
         } catch (error) {
             console.error('Error fetching access token:', error.response ? error.response.data : error.message);
         }
@@ -53,11 +55,13 @@ const Home = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            await getTwitchAccessToken();
+            if (!accessToken || Date.now() >= tokenExpiry) {
+                await getTwitchAccessToken();
+            }
             await fetchGames();
         };
         fetchData();
-    }, [accessToken]);
+    }, [accessToken, tokenExpiry]);
 
     return (
         <div>
