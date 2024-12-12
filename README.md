@@ -21,7 +21,7 @@ Game Explorer is a web application that helps users discover games tailored to t
 - Display **trending** and **top-rated** games.
 - View detailed game info such as description, media, and developer details.
 - Responsive design for seamless browsing on desktop and mobile.
-- Save games to your **favorites** (coming soon).
+- Save games to your **watchlist**.
 
 ---
 

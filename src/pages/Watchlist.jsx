@@ -6,7 +6,7 @@ const Watchlist = () => {
     const { state } = useContext(GameContext);
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4 ps-5">
             <h1 className="text-center mb-4">Your Watchlist</h1>
             <div className="row">
                 {state.watchlist.map((game) => (
