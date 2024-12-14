@@ -1,37 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import { getTwitchAccessToken } from "../utils/Auth";
-import BackButton from "../components/BackButton";
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { GameContext } from '../context/GameContext';
+import BackButton from '../components/BackButton';
 
+const API_URL = 'https://cors-proxy-server-5175830025d3.herokuapp.com/https://api.igdb.com/v4/games';
+
+/**
+ * Component to display detailed information about a game.
+ * @returns {JSX.Element} - The GameDetail component.
+ */
 const GameDetail = () => {
     const { id } = useParams();
+    const { state } = useContext(GameContext);
+    const { accessToken, tokenExpiry } = state;
     const [game, setGame] = useState(null);
-    const [accessToken, setAccessToken] = useState('');
-    const [tokenExpiry, setTokenExpiry] = useState(0);
 
     useEffect(() => {
+        /**
+         * Fetches detailed information about the game from the IGDB API.
+         */
         const fetchGameDetails = async () => {
             if (!accessToken || Date.now() >= tokenExpiry) {
-                const { accessToken, tokenExpiry } = await getTwitchAccessToken();
-                setAccessToken(accessToken);
-                setTokenExpiry(tokenExpiry);
+                // Handle token expiry or absence
+                return;
             }
+
             try {
-                const response = await axios.post(
-                    `https://cors-proxy-server-5175830025d3.herokuapp.com/https://api.igdb.com/v4/games`,
-                    `
-                    fields name, genres.name, summary, storyline, screenshots.url, videos.video_id;
-                    where id = ${id};
-                    `,
-                    {
-                        headers: {
-                            'Client-ID': import.meta.env.VITE_CLIENT_ID,
-                            'Authorization': `Bearer ${accessToken}`,
-                            'x-requested-with': 'XMLHttpRequest'
-                        },
+                const response = await axios.post(API_URL, `fields name, genres.name, summary, storyline, screenshots.url, videos.video_id; where id = ${id};`, {
+                    headers: {
+                        'Client-ID': import.meta.env.VITE_CLIENT_ID,
+                        'Authorization': `Bearer ${accessToken}`,
+                        'x-requested-with': 'XMLHttpRequest'
                     }
-                );
+                });
                 setGame(response.data[0]);
             } catch (error) {
                 console.error('Error fetching game details:', error);

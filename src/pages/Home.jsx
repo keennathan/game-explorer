@@ -4,6 +4,10 @@ import GameCard from "../components/GameCard";
 import { GameContext } from "../context/GameContext";
 import { getTwitchAccessToken } from "../utils/Auth";
 
+/**
+ * Component to display the home page with a list of most rated games.
+ * @returns {JSX.Element} - The Home component.
+ */
 const Home = () => {
     const { state, dispatch } = useContext(GameContext);
     const [selectedPlatform, setSelectedPlatform] = useState('all');
@@ -12,6 +16,10 @@ const Home = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
+    /**
+     * Fetches games from the IGDB API based on the current page.
+     * @param {number} page - The current page number.
+     */
     const fetchGames = async (page = 0) => {
         if (isLoading) return;
         setIsLoading(true);
@@ -82,6 +90,11 @@ const Home = () => {
         };
     }, [isLoading]);
 
+    /**
+     * Filters games by the selected platform.
+     * @param {string} platform - The selected platform.
+     * @returns {Array} - The filtered list of games.
+     */
     const filterGamesByPlatform = (platform) => {
         if (platform === 'all') return state.games;
         return state.games.filter((game) =>
@@ -107,7 +120,6 @@ const Home = () => {
                     <option value="ps5">PS5</option>
                     <option value="xbox">Xbox</option>
                 </select>
-
 
                 <div className="row">
                     {filterGamesByPlatform(selectedPlatform).map((game) => (

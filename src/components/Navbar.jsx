@@ -1,11 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+/**
+ * Component to display the navigation bar.
+ * @returns {JSX.Element} - The Navbar component.
+ */
 const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
           <div className="container">
+            {/* Brand link */}
             <Link className="navbar-brand" to="/">Game Explorer</Link>
+            {/* Toggle button for mobile view */}
             <button
               className="navbar-toggler"
               type="button"
@@ -17,6 +23,7 @@ const Navbar = () => {
             >
               <span className="navbar-toggler-icon"></span>
             </button>
+            {/* Navbar links */}
             <div className="collapse navbar-collapse" id="navbarNav">
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item">

@@ -7,6 +7,12 @@ import BackButton from '../components/BackButton';
 
 const API_URL = 'https://cors-proxy-server-5175830025d3.herokuapp.com/https://api.igdb.com/v4/games';
 
+/**
+ * Function to search games from the IGDB API.
+ * @param {string} query - The search query.
+ * @param {string} accessToken - The access token for authentication.
+ * @returns {Array} - The list of games matching the search query.
+ */
 const searchGames = async (query, accessToken) => {
   try {
     const response = await axios.post(API_URL, `search "${query}"; fields name, cover.url, genres.name, platforms.name;`, {
@@ -23,6 +29,10 @@ const searchGames = async (query, accessToken) => {
   }
 };
 
+/**
+ * Component to search and display games.
+ * @returns {JSX.Element} - The SearchGames component.
+ */
 const SearchGames = () => {
   const [query, setQuery] = useState('');
   const { state, dispatch } = useContext(GameContext);
@@ -59,33 +69,33 @@ const SearchGames = () => {
     setIsLoading(false);
   };
 
-  return ( 
-        <div className="ps-4 mt-5 d-flex flex-column align-items-center vh-100">
-        <div className="container text-center mt-5">
+  return (
+    <div className="ps-4 mt-5 d-flex flex-column align-items-center vh-100">
+      <div className="container text-center mt-5">
         <div className="d-flex justify-content-start">
-            <BackButton />
+          <BackButton />
         </div>
         <h1 className="mb-3">Search Games</h1>
         <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for games"
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search for games"
         />
-        <button className='mb-3 text-bg-dark' onClick={handleSearch} disabled={isLoading}>
-            {isLoading ? 'Searching...' : 'Search'}
+        <button onClick={handleSearch} disabled={isLoading}>
+          {isLoading ? 'Searching...' : 'Search'}
         </button>
         {error && <div className="error text-danger">{error}</div>}
         <div className="row">
-            {state.searchResults && state.searchResults.map((game) => (
+          {state.searchResults && state.searchResults.map((game) => (
             <div className="col-md-4 mb-4" key={game.id}>
-                <GameCard game={game} />
+              <GameCard game={game} />
             </div>
-            ))}
+          ))}
         </div>
-        </div>
+      </div>
     </div>
-    );
-}
+  );
+};
 
 export default SearchGames;

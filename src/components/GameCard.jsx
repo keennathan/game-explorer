@@ -2,13 +2,25 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { GameContext } from "../context/GameContext";
 
+/**
+ * Component to display a game card.
+ * @param {Object} props - The component props.
+ * @param {Object} props.game - The game object to display.
+ * @returns {JSX.Element} - The GameCard component.
+ */
 const GameCard = ({ game }) => {
     const { state, dispatch } = useContext(GameContext);
 
+    /**
+     * Adds the game to the watchlist.
+     */
     const addToWatchlist = () => {
         dispatch({ type: "ADD_TO_WATCHLIST", payload: game });
     };
 
+    /**
+     * Removes the game from the watchlist.
+     */
     const removeFromWatchlist = () => {
         dispatch({ type: "REMOVE_FROM_WATCHLIST", payload: game.id });
     };
@@ -26,7 +38,7 @@ const GameCard = ({ game }) => {
             <div className="card-body d-flex flex-column">
                 <h5 className="card-title">{game.name}</h5>
                 <p className="card-platforms"><strong>Platform: </strong>
-                    {game.platforms.map(platform => platform.name).join(', ')}
+                    {Array.isArray(game.platforms) ? game.platforms.map(platform => platform.name).join(', ') : 'N/A'}
                 </p>
                 {isInWatchlist ? (
                     <button onClick={removeFromWatchlist} className="btn btn-danger mt-auto">
