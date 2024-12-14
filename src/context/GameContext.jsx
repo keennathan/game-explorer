@@ -4,7 +4,9 @@ const GameContext = createContext();
 
 const initialState = {
     games: [],
-    watchlist: []
+    watchlist: [],
+    searchResults: [],
+    accessToken: '' // Add accessToken to the initial state
 };
 
 const gameReducer = (state, action) => {
@@ -28,6 +30,16 @@ const gameReducer = (state, action) => {
             return {
                 ...state,
                 watchlist: state.watchlist.filter(game => game.id !== action.payload)
+            };
+        case "SET_SEARCH_RESULTS":
+            return {
+                ...state,
+                searchResults: action.payload
+            };
+        case "SET_ACCESS_TOKEN": // Add a new action type for setting the access token
+            return {
+                ...state,
+                accessToken: action.payload
             };
         default:
             return state;

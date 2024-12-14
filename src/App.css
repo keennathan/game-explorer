@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+.mt-5 {
+  margin-top: 5rem !important;
+}
+
+.loader {
+  height: 50px;
+}

@@ -1,73 +1,91 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import GameCard from "../components/GameCard";
-import { getTwitchAccessToken } from "../utils/Auth";
-import BackButton from "../components/BackButton";
+import React, { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
+import { GameContext } from '../context/GameContext';
+import GameCard from '../components/GameCard';
+import { getTwitchAccessToken } from '../utils/Auth';
+import BackButton from '../components/BackButton';
+
+const API_URL = 'https://cors-proxy-server-5175830025d3.herokuapp.com/https://api.igdb.com/v4/games';
+
+const searchGames = async (query, accessToken) => {
+  try {
+    const response = await axios.post(API_URL, `search "${query}"; fields name, cover.url, genres.name, platforms.name;`, {
+      headers: {
+        'Client-ID': import.meta.env.VITE_CLIENT_ID,
+        'Authorization': `Bearer ${accessToken}`,
+        'x-requested-with': 'XMLHttpRequest'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching for games:', error);
+    return [];
+  }
+};
 
 const SearchGames = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [results, setResults] = useState([]);
-    const [accessToken, setAccessToken] = useState('');
-    const [tokenExpiry, setTokenExpiry] = useState(0);
+  const [query, setQuery] = useState('');
+  const { state, dispatch } = useContext(GameContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const searchGames = async () => {
-            if (!accessToken || Date.now() >= tokenExpiry) {
-                const { accessToken, tokenExpiry } = await getTwitchAccessToken();
-                setAccessToken(accessToken);
-                setTokenExpiry(tokenExpiry);
-            }
-            try {
-                const response = await axios.post(
-                    'https://cors-proxy-server-5175830025d3.herokuapp.com/https://api.igdb.com/v4/games',
-                    `
-                    search "${searchTerm}";
-                    fields name, rating, cover.url, platforms.name;
-                    limit 10;
-                    `,
-                    {
-                        headers: {
-                            'Client-ID': import.meta.env.VITE_CLIENT_ID,
-                            'Authorization': `Bearer ${accessToken}`,
-                        },
-                    }
-                );
-                setResults(response.data);
-            } catch (error) {
-                console.error('Error searching games:', error);
-            }
-        };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!state.accessToken || Date.now() >= state.tokenExpiry) {
+        const { accessToken, tokenExpiry } = await getTwitchAccessToken();
+        dispatch({ type: 'SET_ACCESS_TOKEN', payload: accessToken });
+        dispatch({ type: 'SET_TOKEN_EXPIRY', payload: tokenExpiry - 30000 }); // Subtract 30 seconds buffer
+      }
+    };
 
-        if (searchTerm) {
-            searchGames();
-        }
-    }, [searchTerm, accessToken, tokenExpiry]);
+    fetchData();
+  }, [state.accessToken, state.tokenExpiry]);
 
-    return (
-        <div className="container mt-4">
+  const handleSearch = async () => {
+    setIsLoading(true);
+    setError(null);
+    const accessToken = state.accessToken; // Assuming accessToken is stored in the context state
+    const games = await searchGames(query, accessToken);
+    if (games.length > 0) {
+      // Ensure platforms is always an array
+      const gamesWithPlatforms = games.map(game => ({
+        ...game,
+        platforms: game.platforms || []
+      }));
+      dispatch({ type: 'SET_SEARCH_RESULTS', payload: gamesWithPlatforms });
+    } else {
+      setError('No games found.');
+    }
+    setIsLoading(false);
+  };
+
+  return ( 
+        <div className="ps-4 mt-5 d-flex flex-column align-items-center vh-100">
+        <div className="container text-center mt-5">
+        <div className="d-flex justify-content-start">
             <BackButton />
-            <h1 className="text-center mb-4">Search Games</h1>
-            <div className="mb-4">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search for games"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="btn btn-primary mt-2" onClick={() => searchGames()}>
-                    Search
-                </button>
-            </div>
-            <div className="row">
-                {results.map((game) => (
-                    <div className="col-md-4 mb-4" key={game.id}>
-                        <GameCard game={game} />
-                    </div>
-                ))}
-            </div>
         </div>
+        <h1 className="mb-3">Search Games</h1>
+        <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search for games"
+        />
+        <button className='mb-3 text-bg-dark' onClick={handleSearch} disabled={isLoading}>
+            {isLoading ? 'Searching...' : 'Search'}
+        </button>
+        {error && <div className="error text-danger">{error}</div>}
+        <div className="row">
+            {state.searchResults && state.searchResults.map((game) => (
+            <div className="col-md-4 mb-4" key={game.id}>
+                <GameCard game={game} />
+            </div>
+            ))}
+        </div>
+        </div>
+    </div>
     );
-};
+}
 
 export default SearchGames;
